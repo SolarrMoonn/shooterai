@@ -2,10 +2,15 @@ import pygame
 import random
 import numpy as np
 import gymnasium as gym
+import time
 
 class ShooterEnv(gym.Env):
     def __init__(self):
         super().__init__()
+        # Инициализируем генератор случайных чисел с текущим временем
+        random.seed(int(time.time()))
+        np.random.seed(int(time.time()))
+        
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
         self.clock = pygame.time.Clock()
@@ -37,15 +42,16 @@ class ShooterEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        self.target_x = random.randint(50, 750)
-        self.target_y = random.randint(50, 550)
+        # Используем numpy.random для лучшего распределения
+        self.target_x = np.random.randint(100, 700)
+        self.target_y = np.random.randint(100, 500)
         self.score = 0
         self.steps = 0
         self.last_click_x = 400
         self.last_click_y = 300
         self.last_reward = 0
         self.last_action = None
-        self.last_distance = float('inf')  # Сбрасываем last_distance
+        self.last_distance = float('inf')
         return np.array([self.target_x, self.target_y, self.last_click_x, self.last_click_y, self.last_reward, self.max_steps - self.steps], dtype=np.float32), {}
     
     def step(self, action):
@@ -86,7 +92,7 @@ class ShooterEnv(gym.Env):
         
         # Улучшенная система наград
         if hit:
-            reward = 10.0  # Увеличиваем награду за попадание
+            reward = 10.0
             self.score += 1
             self.target_x = random.randint(50, 750)
             self.target_y = random.randint(50, 550)
