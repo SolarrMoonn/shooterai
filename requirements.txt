@@ -1,0 +1,7 @@
+pygame==2.5.2
+numpy==1.26.4
+gymnasium==0.29.1
+stable-baselines3==2.2.1
+torch==2.2.0
+opencv-python==4.9.0.80  # Required by stable-baselines3 for rendering
+cloudpickle==3.0.0  # Required for model serialization 

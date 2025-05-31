@@ -1,12 +1,10 @@
 import pygame
 import random
-import stable_baselines3
 
-# Инициализация
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 
-# Переменные
+
 target_x = random.randint(50, 750)
 target_y = random.randint(50, 550)
 radius = 20
@@ -16,10 +14,8 @@ font = pygame.font.Font(None, 36)
 BLACK = (0, 0, 0)
 PURPLE = (128, 0, 128)
 
-# Игровой цикл
 running = True
 while running:
-    # Обработка событий
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -31,7 +27,7 @@ while running:
                 target_x = random.randint(50, 750)
                 target_y = random.randint(50, 550)
     
-    # Рисование
+
     screen.fill(BLACK)
     pygame.draw.circle(screen, PURPLE, (target_x, target_y), radius) 
     text = font.render(f"Счёт: {score}", True, (255, 255, 255))
