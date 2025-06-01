@@ -1,38 +1,30 @@
 from shooter_env import ShooterEnv
-from stable_baselines3 import PPO
+from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import EvalCallback
 import pygame
 import sys
 import os
 
 try:
-    # Инициализируем pygame
     pygame.init()
-    
-    # Создаем среду
-    print("Creating environment...")
     env = ShooterEnv()
-    
-    # Создаем модель с улучшенными параметрами
-    print("Creating PPO model...")
-    model = PPO(
+    model = SAC(
         "MlpPolicy",
         env,
         learning_rate=3e-4,
-        n_steps=2048,
-        batch_size=64,
-        n_epochs=10,
+        buffer_size=100000,
+        learning_starts=1000,
+        batch_size=256,
+        tau=0.005,
         gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.2,
+        train_freq=1,
+        gradient_steps=1,
+        action_noise=None,
         verbose=1,
         seed=42
     )
     
-    # Создаем директорию для сохранения лучшей модели
     os.makedirs("best_model", exist_ok=True)
-    
-    # Создаем среду для оценки
     eval_env = ShooterEnv()
     eval_callback = EvalCallback(
         eval_env,
@@ -43,17 +35,13 @@ try:
         render=False
     )
     
-    # Обучаем модель
-    print("Starting training...")
     model.learn(
-        total_timesteps=200000,#величиваем количество шагов обучения
+        total_timesteps=10000,
         callback=eval_callback,
         progress_bar=True
     )
     
-    # Сохраняем финальную модель
-    print("Saving model...")
-    model.save("ppo_shooter")
+    model.save("sac_shooter")
     
 except Exception as e:
     print(f"Error occurred: {str(e)}")
@@ -61,8 +49,6 @@ except Exception as e:
     traceback.print_exc()
     
 finally:
-    # Закрываем среду и pygame
-    print("Cleaning up...")
     if 'env' in locals():
         env.close()
     if 'eval_env' in locals():
