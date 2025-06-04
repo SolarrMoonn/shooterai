@@ -76,13 +76,19 @@ class ShooterEnv(gym.Env):
             terminated = self.steps >= self.max_steps
             return np.array([self.target_x, self.target_y, self.max_steps - self.steps], dtype=np.float32), reward, terminated, False, info
         
-        click_x = self.target_x + distance * np.cos(angle)
-        click_y = self.target_y + distance * np.sin(angle)
+        # Calculate shot position relative to target (target is now origin 0,0)
+        relative_x = distance * np.cos(angle)
+        relative_y = distance * np.sin(angle)
+        
+        # Convert back to screen coordinates
+        click_x = self.target_x + relative_x
+        click_y = self.target_y + relative_y
         
         click_x = np.clip(click_x, 0, 800)
         click_y = np.clip(click_y, 0, 600)
         
-        distance = ((click_x - self.target_x) ** 2 + (click_y - self.target_y) ** 2) ** 0.5
+        # Distance is now just the length of the relative vector
+        distance = (relative_x ** 2 + relative_y ** 2) ** 0.5
         hit = distance < self.radius
         
         if hit:
